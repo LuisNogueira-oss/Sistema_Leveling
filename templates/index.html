@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sovereign System v7.0 - Mobile</title>
+    <style>
+        :root {
+            --bg-color: #0a0b0d;
+            --card-bg: #111418;
+            --neon-blue: #00f2ff;
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+            --rank-c-glow: rgba(0, 242, 255, 0.3);
+        }
+
+        body { background-color: var(--bg-color); color: var(--text-main); font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; padding: 40px 20px; margin: 0; min-height: 100vh; box-sizing: border-box; }
+        .dashboard-container { background-color: var(--card-bg); padding: 40px; border-radius: 12px; border: 1px solid #1f242d; width: 600px; max-width: 100%; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); box-sizing: border-box;}
+        .dashboard-container::before { content: ''; position: absolute; top: 0; left: 0; width: 20px; height: 20px; border-top: 4px solid var(--neon-blue); border-left: 4px solid var(--neon-blue); border-radius: 2px 0 0 0; }
+        
+        .title { color: var(--neon-blue); font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px; font-weight: bold;}
+        .name { font-size: 2.5rem; font-weight: 800; text-transform: uppercase; text-shadow: 0 0 15px rgba(255,255,255,0.2); margin-bottom: 20px;}
+        hr { border: 0; border-top: 1px solid #333; margin: 20px 0; }
+        
+        .stats-row { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .stats-label { color: var(--text-dim); font-weight: 600; text-transform: uppercase; font-size: 0.85rem;}
+        .stats-value { font-weight: 800; color: var(--neon-blue); }
+        .xp-container { width: 100%; height: 8px; background: #1a1d23; border-radius: 4px; overflow: hidden; margin-bottom: 30px; }
+        .xp-bar { height: 100%; background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%); box-shadow: 0 0 10px rgba(37, 117, 252, 0.5); transition: width 0.5s ease-in-out; }
+        
+        .attributes-grid { display: flex; justify-content: space-around; text-align: center; margin: 30px 0; }
+        .attr-item .label { display: block; font-size: 0.7rem; color: var(--text-dim); margin-bottom: 10px; font-weight: bold; letter-spacing: 1px; }
+        .rank-c-circle { border: 2px solid var(--neon-blue); border-radius: 50%; width: 70px; height: 70px; display: flex; flex-direction: column; justify-content: center; align-items: center; animation: pulse-rank-c 2s infinite ease-in-out; box-shadow: 0 0 15px var(--rank-c-glow); margin: 0 auto; }
+        .rank-c-circle .valor { font-size: 1.5rem; font-weight: 800; color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); }
+        .rank-tag { font-size: 0.55rem; font-weight: 900; color: var(--neon-blue); margin-top: 2px; }
+        .attr-value-common { font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin-top: 15px; }
+
+        .missoes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;}
+        .missao-card { background: #15181e; padding: 15px; border-radius: 8px; border: 1px solid #2a2f38; }
+        .missao-nome { color: #fff; font-weight: bold; font-size: 0.9rem; margin-bottom: 5px; }
+        .missao-recompensa { color: var(--neon-blue); font-size: 0.75rem; margin-bottom: 12px; font-weight: 600;}
+        .input-diario { width: 100%; padding: 10px; background: #0a0b0d; border: 1px solid #333; color: white; border-radius: 4px; margin-bottom: 10px; box-sizing: border-box; font-family: inherit; font-size: 0.8rem;}
+        .input-diario:focus { outline: none; border-color: var(--neon-blue); }
+        .btn-executar { width: 100%; padding: 10px; background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); font-weight: bold; cursor: pointer; border-radius: 4px; transition: 0.2s; font-size: 0.75rem; letter-spacing: 1px;}
+        .btn-executar:hover { background: var(--neon-blue); color: #000; }
+
+        .log-card { background: #15181e; padding: 15px; border-radius: 8px; border-left: 3px solid var(--neon-blue); margin-bottom: 10px; }
+        .log-meta { font-size: 0.65rem; color: var(--text-dim); margin-bottom: 5px; text-transform: uppercase; font-weight: bold; }
+        .log-text { font-size: 0.85rem; color: var(--text-main); font-weight: 600; }
+
+        /* MÓDULO DE RESPONSIVIDADE MOBILE (Magia do CSS) */
+        @media (max-width: 650px) {
+            body { padding: 10px; }
+            .dashboard-container { padding: 20px; }
+            .name { font-size: 1.8rem; }
+            .missoes-grid { grid-template-columns: 1fr; } /* Transforma as colunas em 1 só */
+            .attributes-grid { flex-wrap: wrap; gap: 20px; } /* Permite que os atributos quebrem linha */
+            .attr-item { width: 45%; }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <div class="title">Monarca do Código</div>
+    <div class="name">{{ status.nome }}</div>
+
+    <div class="stats-row">
+        <span class="stats-label">Nível de Autoridade</span>
+        <span class="stats-value">{{ status.nivel }}</span>
+    </div>
+    <div class="stats-row">
+        <span class="stats-label">Essência Acumulada</span>
+        <span class="stats-value">{{ status.xp }} / {{ status.nivel * 500 }}</span>
+    </div>
+    <div class="xp-container">
+        <div class="xp-bar" style="width: {{ (status.xp / (status.nivel * 500)) * 100 }}%;"></div>
+    </div>
+
+    <hr>
+
+    <div class="attributes-grid">
+        <div class="attr-item">
+            <span class="label">LÓGICA</span>
+            {% if status.atributos.logica >= 20 %}
+            <div class="rank-c-circle"><span class="valor">{{ status.atributos.logica }}</span><span class="rank-tag">RANK C</span></div>
+            {% else %}
+            <div class="attr-value-common">{{ status.atributos.logica }}</div>
+            {% endif %}
+        </div>
+        <div class="attr-item">
+            <span class="label">ESTÉTICA</span>
+            <div class="attr-value-common">{{ status.atributos.estetica }}</div>
+        </div>
+        <div class="attr-item">
+            <span class="label">TESOURARIA</span>
+            <div class="attr-value-common">{{ status.atributos.tesouraria }}</div>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="title">Painel de Operações (Missões)</div>
+    <div class="missoes-grid">
+        {% for id, m in missoes.items() %}
+        <div class="missao-card">
+            <div class="missao-nome">{{ m.nome }}</div>
+            <div class="missao-recompensa">+{{ m.xp }} XP | +{{ m.pontos }} {{ m.attr|upper }}</div>
+            <form action="/completar_missao" method="POST">
+                <input type="hidden" name="missao_id" value="{{ id }}">
+                <input type="text" name="topico" placeholder="Relatório da missão..." required class="input-diario" autocomplete="off">
+                <button type="submit" class="btn-executar">EXECUTAR</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+
+    <hr>
+
+    <div class="title">Últimos Registros</div>
+    <div style="margin-top: 15px;">
+        {% for log in diario[-3:]|reverse %}
+        <div class="log-card">
+            <div class="log-meta">DATA: {{ log.data }} | MISSÃO: {{ log.missao }}</div>
+            <div class="log-text">{{ log.topico }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>
