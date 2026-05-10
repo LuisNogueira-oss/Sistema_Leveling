@@ -72,6 +72,7 @@ def completar_missao():
     return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
-    # O Render usa uma variável de ambiente chamada PORT
+    # O Render fornece a porta automaticamente, mas se não fornecer, usamos a 5000
     port = int(os.environ.get("PORT", 5000))
+    # Tiramos o debug=True para o deploy final
     app.run(host='0.0.0.0', port=port)
